@@ -2,11 +2,16 @@ package uy.edu.um.doors;
 
 import uy.edu.um.tad.hash.MyHashImpl;
 import uy.edu.um.tad.heap.MyHeapImpl;
+import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueueImpl;
 import uy.edu.um.tad.stack.MyStackImpl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class ProcessManagerImpl implements ProcessManager{
@@ -52,7 +57,6 @@ public class ProcessManagerImpl implements ProcessManager{
                     proceso.getEventos().add(evento);
                 }
                 nuevos.enqueue(proceso);
-                System.out.println("IMPLEMENTAR");
             }
             scannerPro.close();
         } catch (FileNotFoundException e){
@@ -62,7 +66,36 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void prepareProcesses() {
-        System.out.println("IMPLEMENTAR");
+        while (!nuevos.isEmpty()){
+            Proceso proceso = null;
+            try {
+                proceso = nuevos.dequeue();
+            } catch (EmptyQueueException e){
+                break;
+            }
+            int cantCpu = 0;
+            int cantRam = 0;
+            int cantDisk = 0;
+            for(int i = 0; i < proceso.getEventos().size(); i++){
+                Evento evento = proceso.getEventos().get(i);
+                if (evento.getType().equals("CPU")){
+                    cantCpu++;
+                }else if (evento.getType().equals("RAM")) {
+                    cantRam++;
+                }else {
+                    cantDisk++;
+                }
+            }
+            int cantEventos = proceso.getEventos().size();
+            int w = proceso.getPropietario().getTipo().equals("ADMIN") ? 32 : 16;
+            int prioridad = (8*cantCpu + 2*cantRam + 2*cantDisk)/ cantEventos + w * cantEventos;
+            proceso.setPrioridad(prioridad);
+            proceso.setEstado("PENDING");
+            pendientes.insert(proceso);
+            String mensaje = "NEW PENDING PROCESS: PID=" + proceso.getPid() + " | " + proceso.getNombre() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid() + " | P=" + proceso.getPrioridad();
+            escribirLog(mensaje);
+        }
+
     }
 
     @Override
@@ -103,5 +136,20 @@ public class ProcessManagerImpl implements ProcessManager{
     @Override
     public void printStatusByProcess(int pid) {
         System.out.println("IMPLEMENTAR");
+    }
+
+    public void escribirLog(String mensaje){
+        try {
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timestamp = formato.format(new Date());
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = formatoFecha.format(new Date());
+            String archivo = "LOGS_PROCESS" + fecha;
+            FileWriter fw = new FileWriter(archivo, true);
+            fw.write("[" + timestamp + "]: " + mensaje + "\n");
+            fw.close();
+        } catch (IOException e){
+            System.out.println("ERROR, no se pudo escribir el log");
+        }
     }
 }

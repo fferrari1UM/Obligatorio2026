@@ -2,20 +2,20 @@ package uy.edu.um.doors;
 
 import uy.edu.um.tad.list.MyLinkedListImpl;
 
-public class Event {
-    private String type;
-    private MyLinkedListImpl<String> instrtuctions;
+public class Evento {
+    private String tipo;
+    private MyLinkedListImpl<String> instrucciones;
 
-    public Event(String type){
-        this.type = type;
-        this.instrtuctions = new MyLinkedListImpl<>();
+    public Evento(String tipo){
+        this.tipo = tipo;
+        this.instrucciones = new MyLinkedListImpl<>();
     }
 
     public String getType() {
-        return type;
+        return tipo;
     }
 
-    public MyLinkedListImpl<String> getInstrtuctions() {
-        return instrtuctions;
+    public MyLinkedListImpl<String> getInstructions() {
+        return instrucciones;
     }
 }
