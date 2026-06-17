@@ -1,6 +1,8 @@
 package uy.edu.um.doors;
 
+import jdk.jfr.Event;
 import uy.edu.um.tad.hash.MyHashImpl;
+import uy.edu.um.tad.heap.EmptyHeapException;
 import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueueImpl;
@@ -16,10 +18,10 @@ import java.util.Scanner;
 
 public class ProcessManagerImpl implements ProcessManager{
     //EL DISEÑO DE LA ESTRUCTURA DE ALMACENAMIENTO DEBE IMPLEMENTARSE EN ESTA CLASE EN RELACIÓN CON LAS ENTIDADES QUE DEFINA
-    private MyHashImpl<Integer, Usuario> usuarios;
-    private MyQueueImpl<Proceso> nuevos;
-    private MyHeapImpl<Proceso> pendientes;
-    private MyStackImpl<Proceso> finalizados;
+    private MyHashImpl<Integer, Usuario> usuarios = new MyHashImpl<>();
+    private MyQueueImpl<Proceso> nuevos = new MyQueueImpl<>();
+    private MyHeapImpl<Proceso> pendientes = new MyHeapImpl<>();
+    private MyStackImpl<Proceso> finalizados = new MyStackImpl<>();
     private Proceso enEjecucion = null;
 
     @Override
@@ -49,7 +51,7 @@ public class ProcessManagerImpl implements ProcessManager{
                     String[] parteEvt = eventoStr.split(":");
                     String tipo = parteEvt[0].trim();
                     String instrucciones = parteEvt[1].replace("[", "").replace("]", "");
-                    String[] instruccionesArr = instrucciones.split(" ");
+                    String[] instruccionesArr = instrucciones.split(",\\s+");
                     Evento evento = new Evento(tipo);
                     for (String instruccion : instruccionesArr) {
                         evento.getInstructions().add(instruccion);
@@ -100,7 +102,35 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void executeNextProcess() {
-        System.out.println("IMPLEMENTAR");
+        if (enEjecucion != null){
+            System.out.println("Ya se encuentra un proceso en ejecucion");
+            return;
+        }
+        if (pendientes.isEmpty()){
+            System.out.println("No hay procesos pendientes");
+            return;
+        }
+        Proceso proceso = null;
+        try{
+            proceso = pendientes.remove();
+        } catch (EmptyHeapException e){
+            return;
+        }
+        proceso.setEstado("RUNNING");
+        enEjecucion = proceso;
+        String mensaje = "EXECUTING PROCESS: PID=" + proceso.getPid() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid();
+        for (int i = 0; i < enEjecucion.getEventos().size(); i++){
+            Evento evento = enEjecucion.getEventos().get(i);
+            String instrucciones = "";
+            for (int j = 0; j < evento.getInstructions().size(); j++){
+                instrucciones += evento.getInstructions().get(j);
+                if (j < evento.getInstructions().size() -1) {
+                    instrucciones += ", ";
+                }
+            }
+            mensaje += "\n EVENT: " + evento.getType() + " | Instructions [" + instrucciones + "]";
+        }
+        escribirLog(mensaje);
     }
 
     @Override
