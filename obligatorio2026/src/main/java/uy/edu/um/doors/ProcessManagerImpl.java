@@ -197,6 +197,12 @@ public class ProcessManagerImpl implements ProcessManager{
     @Override
     public void printStatus() {
 
+        System.out.println("IMPLEMENTAR");
+    }
+
+    @Override
+    public void printStatusVerbose() {
+
 
         System.out.println("PROCESS STATUS VERBOSE");
 
@@ -235,12 +241,7 @@ public class ProcessManagerImpl implements ProcessManager{
                 break;
             }
         }
-        
-        System.out.println("IMPLEMENTAR");
-    }
 
-    @Override
-    public void printStatusVerbose() {
         System.out.println("IMPLEMENTAR");
     }
 
