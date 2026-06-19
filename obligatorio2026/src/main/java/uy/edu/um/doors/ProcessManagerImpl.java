@@ -1,6 +1,5 @@
 package uy.edu.um.doors;
 
-import jdk.jfr.Event;
 import uy.edu.um.tad.hash.MyHashImpl;
 import uy.edu.um.tad.heap.EmptyHeapException;
 import uy.edu.um.tad.heap.MyHeapImpl;
