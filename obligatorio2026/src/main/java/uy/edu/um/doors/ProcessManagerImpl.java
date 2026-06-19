@@ -231,6 +231,10 @@ public class ProcessManagerImpl implements ProcessManager{
             }
         }
 
+        for (int i = 0; i < tempPendientes.size(); i++) {
+            pendientes.insert(tempPendientes.get(i));
+        }
+
         System.out.println("FINISHED:");
         MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
         while (!finalizados.isEmpty()) {
@@ -242,7 +246,28 @@ public class ProcessManagerImpl implements ProcessManager{
             }
         }
 
-        System.out.println("IMPLEMENTAR");
+        for (int i = 0; i < tempFinalizados.size(); i++) {
+            Proceso p = tempFinalizados.get(i);
+            System.out.println("\tPID=" + p.getPid() + " " + p.getNombre()
+                    + " | STATE: " + p.getTipoFinalizacion()
+                    + " | USER:" + p.getPropietario().getAlias()
+                    + " UID:" + p.getPropietario().getUid());
+            printEventos(p);
+            finalizados.push(p);
+        }
+    }
+
+    private void printEventos(Proceso p) {
+        for (int i = 0; i < p.getEventos().size(); i++) {
+            Evento e = p.getEventos().get(i);
+            String instrucciones = "";
+            for (int j = 0; j < e.getInstructions().size(); j++) {
+                instrucciones += e.getInstructions().get(j);
+                if (j < e.getInstructions().size() - 1) instrucciones += ", ";
+            }
+            System.out.println("\t\tEVENT: " + e.getType() + " | Instructions [" + instrucciones + "]");
+        }
+
     }
 
     @Override
