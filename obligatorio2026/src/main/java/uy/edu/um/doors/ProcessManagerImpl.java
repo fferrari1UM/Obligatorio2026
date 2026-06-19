@@ -191,7 +191,44 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void terminateProcess(int uid) {
-        System.out.println("IMPLEMENTAR");
+
+        if (enEjecucion == null) {
+            System.out.println("No se encuentra ningun proceso en ejecucion");
+            return;
+        }
+
+        Usuario terminador = usuarios.get(uid);
+        if (terminador == null) {
+            System.out.println("No existe usuario con UID: " + uid);
+            return;
+        }
+
+        enEjecucion.setEstado("FINISHED");
+        enEjecucion.setTipoFinalizacion("TERMINATED");
+        if (finalizados.size() == MAX_FINALIZADOS) {
+            String submensaje = "Finished process stack overflow";
+            while (!finalizados.isEmpty()) {
+                Proceso proceso = null;
+                try {
+                    proceso = finalizados.pop();
+                } catch (EmptyStackException e) {
+                    break;
+                }
+                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre()
+                        + " | STATE: " + proceso.getTipoFinalizacion()
+                        + " | USER:" + proceso.getPropietario().getAlias()
+                        + " UID:" + proceso.getPropietario().getUid();
+            }
+            escribirLog(submensaje);
+        }
+
+        finalizados.push(enEjecucion);
+        String mensaje = "ENDING PROCESS: PID=" + enEjecucion.getPid()
+                + " | STATE: TERMINATED by USER:" + terminador.getAlias()
+                + " UID:" + uid;
+        escribirLog(mensaje);
+        enEjecucion = null;
+
     }
 
     @Override
