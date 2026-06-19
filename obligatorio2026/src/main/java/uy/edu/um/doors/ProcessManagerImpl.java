@@ -356,6 +356,11 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void printStatusByUser(int uid) {
+        if (usuarios.get(uid) == null) {
+            System.out.println("No existe usuario con UID: " + uid);
+            return;
+        }
+
         System.out.println("PROCESS STATUS - USER UID:" + uid);
 
         System.out.println("EXECUTING:");
