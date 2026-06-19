@@ -22,10 +22,9 @@ public class ProcessManagerImpl implements ProcessManager{
     //EL DISEÑO DE LA ESTRUCTURA DE ALMACENAMIENTO DEBE IMPLEMENTARSE EN ESTA CLASE EN RELACIÓN CON LAS ENTIDADES QUE DEFINA
     private MyHashImpl<Integer, Usuario> usuarios = new MyHashImpl<>();
     private MyQueueImpl<Proceso> nuevos = new MyQueueImpl<>();
-    private MyHeapImpl<Proceso> pendientes = new MyHeapImpl<>();
+    private MyHeapImpl<Proceso> pendientes = new MyHeapImpl<>(false);    
     private MyStackImpl<Proceso> finalizados = new MyStackImpl<>();
     private Proceso enEjecucion = null;
-    private int MAX_FINALIZADOS = 10;
 
     @Override
     public void loadProcessAndUserData(String processCsvPath, String usersCsvPath){
