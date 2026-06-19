@@ -234,57 +234,55 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void printStatus() {
-    System.out.println("PROCESS STATUS");
+        System.out.println("PROCESS STATUS");
 
-    // Otra fase
-    System.out.println("EXECUTING:");
-    if (enEjecucion != null) {
-        System.out.println("\tPID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
-                + " | USER:" + enEjecucion.getPropietario().getAlias()
-                + " UID:" + enEjecucion.getPropietario().getUid()
-                + " | P=" + enEjecucion.getPrioridad());
-    }
+        System.out.println("EXECUTING:");
+        if (enEjecucion != null) {
+            System.out.println("\tPID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
+                    + " | USER:" + enEjecucion.getPropietario().getAlias()
+                    + " UID:" + enEjecucion.getPropietario().getUid()
+                    + " | P=" + enEjecucion.getPrioridad());
+        }
 
-    // Siguiente fase 
-    System.out.println("PENDING:");
-    MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
-    while (!pendientes.isEmpty()) {
-        try {
-            Proceso p = pendientes.remove();
-            System.out.println("\tPID=" + p.getPid() + " | " + p.getNombre()
+        System.out.println("PENDING:");
+        MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
+        while (!pendientes.isEmpty()) {
+            try {
+                Proceso p = pendientes.remove();
+                System.out.println("\tPID=" + p.getPid() + " | " + p.getNombre()
+                        + " | USER:" + p.getPropietario().getAlias()
+                        + " UID:" + p.getPropietario().getUid()
+                        + " | P=" + p.getPrioridad());
+                tempPendientes.add(p);
+            } catch (EmptyHeapException e) {
+                break;
+            }
+        }
+        for (int i = 0; i < tempPendientes.size(); i++) {
+            pendientes.insert(tempPendientes.get(i));
+        }
+
+        System.out.println("FINISHED:");
+        MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
+        while (!finalizados.isEmpty()) {
+            try {
+                Proceso p = finalizados.pop();
+                tempFinalizados.add(p);
+            } catch (EmptyStackException e) {
+                break;
+            }
+        }
+        for (int i = 0; i < tempFinalizados.size(); i++) {
+            Proceso p = tempFinalizados.get(i);
+            System.out.println("\tPID=" + p.getPid() + " " + p.getNombre()
+                    + " | STATE: " + p.getTipoFinalizacion()
                     + " | USER:" + p.getPropietario().getAlias()
-                    + " UID:" + p.getPropietario().getUid()
-                    + " | P=" + p.getPrioridad());
-            tempPendientes.add(p);
-        } catch (EmptyHeapException e) {
-            break;
+                    + " UID:" + p.getPropietario().getUid());
+        }
+        for (int i = tempFinalizados.size() - 1; i >= 0; i--) {
+            finalizados.push(tempFinalizados.get(i));
         }
     }
-    for (int i = 0; i < tempPendientes.size(); i++) {
-        pendientes.insert(tempPendientes.get(i));
-    }
-
-    // Siguiente fase 
-    System.out.println("FINISHED:");
-    MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
-    while (!finalizados.isEmpty()) {
-        try {
-            Proceso p = finalizados.pop();
-            tempFinalizados.add(p);
-        } catch (EmptyStackException e) {
-            break;
-        }
-    }
-    for (int i = 0; i < tempFinalizados.size(); i++) {
-        Proceso p = tempFinalizados.get(i);
-        System.out.println("\tPID=" + p.getPid() + " " + p.getNombre()
-                + " | STATE: " + p.getTipoFinalizacion()
-                + " | USER:" + p.getPropietario().getAlias()
-                + " UID:" + p.getPropietario().getUid());
-        finalizados.push(p);
-        }
-    }
-
     @Override
     public void printStatusVerbose() {
 
