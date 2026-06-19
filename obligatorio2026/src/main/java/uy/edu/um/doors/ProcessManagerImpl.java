@@ -143,7 +143,7 @@ public class ProcessManagerImpl implements ProcessManager{
         }
         enEjecucion.setEstado("FINISHED");
         enEjecucion.setTipoFinalizacion("OK");
-        if (finalizados.size() == MAX_FINALIZADOS){
+            if (finalizados.size() == MAX_FINISHED_PROCESS_ON_RAM){
             String submensaje = "Finished process stack overflow";
             while (!finalizados.isEmpty()){
                 Proceso proceso = null;
@@ -170,7 +170,7 @@ public class ProcessManagerImpl implements ProcessManager{
         }
         enEjecucion.setEstado("FINISHED");
         enEjecucion.setTipoFinalizacion("ERROR");
-        if (finalizados.size() == MAX_FINALIZADOS){
+        if (finalizados.size() == MAX_FINISHED_PROCESS_ON_RAM){
             String submensaje = "Finished process stack overflow";
             while (!finalizados.isEmpty()){
                 Proceso proceso = null;
@@ -205,7 +205,7 @@ public class ProcessManagerImpl implements ProcessManager{
 
         enEjecucion.setEstado("FINISHED");
         enEjecucion.setTipoFinalizacion("TERMINATED");
-        if (finalizados.size() == MAX_FINALIZADOS) {
+        if (finalizados.size() == MAX_FINISHED_PROCESS_ON_RAM) {
             String submensaje = "Finished process stack overflow";
             while (!finalizados.isEmpty()) {
                 Proceso proceso = null;
