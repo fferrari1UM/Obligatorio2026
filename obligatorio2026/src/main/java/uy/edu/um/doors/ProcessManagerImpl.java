@@ -191,13 +191,97 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void terminateProcess(int uid) {
-        System.out.println("IMPLEMENTAR");
+
+        if (enEjecucion == null) {
+            System.out.println("No se encuentra ningun proceso en ejecucion");
+            return;
+        }
+
+        Usuario terminador = usuarios.get(uid);
+        if (terminador == null) {
+            System.out.println("No existe usuario con UID: " + uid);
+            return;
+        }
+
+        enEjecucion.setEstado("FINISHED");
+        enEjecucion.setTipoFinalizacion("TERMINATED");
+        if (finalizados.size() == MAX_FINALIZADOS) {
+            String submensaje = "Finished process stack overflow";
+            while (!finalizados.isEmpty()) {
+                Proceso proceso = null;
+                try {
+                    proceso = finalizados.pop();
+                } catch (EmptyStackException e) {
+                    break;
+                }
+                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre()
+                        + " | STATE: " + proceso.getTipoFinalizacion()
+                        + " | USER:" + proceso.getPropietario().getAlias()
+                        + " UID:" + proceso.getPropietario().getUid();
+            }
+            escribirLog(submensaje);
+        }
+
+        finalizados.push(enEjecucion);
+        String mensaje = "ENDING PROCESS: PID=" + enEjecucion.getPid()
+                + " | STATE: TERMINATED by USER:" + terminador.getAlias()
+                + " UID:" + uid;
+        escribirLog(mensaje);
+        enEjecucion = null;
+
     }
 
     @Override
     public void printStatus() {
+    System.out.println("PROCESS STATUS");
 
-        System.out.println("IMPLEMENTAR");
+    // Otra fase
+    System.out.println("EXECUTING:");
+    if (enEjecucion != null) {
+        System.out.println("\tPID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
+                + " | USER:" + enEjecucion.getPropietario().getAlias()
+                + " UID:" + enEjecucion.getPropietario().getUid()
+                + " | P=" + enEjecucion.getPrioridad());
+    }
+
+    // Siguiente fase 
+    System.out.println("PENDING:");
+    MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
+    while (!pendientes.isEmpty()) {
+        try {
+            Proceso p = pendientes.remove();
+            System.out.println("\tPID=" + p.getPid() + " | " + p.getNombre()
+                    + " | USER:" + p.getPropietario().getAlias()
+                    + " UID:" + p.getPropietario().getUid()
+                    + " | P=" + p.getPrioridad());
+            tempPendientes.add(p);
+        } catch (EmptyHeapException e) {
+            break;
+        }
+    }
+    for (int i = 0; i < tempPendientes.size(); i++) {
+        pendientes.insert(tempPendientes.get(i));
+    }
+
+    // Siguiente fase 
+    System.out.println("FINISHED:");
+    MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
+    while (!finalizados.isEmpty()) {
+        try {
+            Proceso p = finalizados.pop();
+            tempFinalizados.add(p);
+        } catch (EmptyStackException e) {
+            break;
+        }
+    }
+    for (int i = 0; i < tempFinalizados.size(); i++) {
+        Proceso p = tempFinalizados.get(i);
+        System.out.println("\tPID=" + p.getPid() + " " + p.getNombre()
+                + " | STATE: " + p.getTipoFinalizacion()
+                + " | USER:" + p.getPropietario().getAlias()
+                + " UID:" + p.getPropietario().getUid());
+        finalizados.push(p);
+        }
     }
 
     @Override
