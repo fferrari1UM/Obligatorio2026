@@ -336,7 +336,9 @@ public class ProcessManagerImpl implements ProcessManager{
                     + " | USER:" + p.getPropietario().getAlias()
                     + " UID:" + p.getPropietario().getUid());
             printEventos(p);
-            finalizados.push(p);
+        }
+        for (int i = tempFinalizados.size() - 1; i >= 0; i--) {
+            finalizados.push(tempFinalizados.get(i));
         }
     }
 
@@ -408,7 +410,9 @@ public class ProcessManagerImpl implements ProcessManager{
                         + " | USER:" + p.getPropietario().getAlias()
                         + " UID:" + p.getPropietario().getUid());
             }
-            finalizados.push(p);
+        }
+        for (int i = tempFinalizados.size() - 1; i >= 0; i--) {
+            finalizados.push(tempFinalizados.get(i));
         }
     }
 
