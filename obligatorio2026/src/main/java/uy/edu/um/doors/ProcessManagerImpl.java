@@ -482,7 +482,7 @@ public class ProcessManagerImpl implements ProcessManager{
             String timestamp = formato.format(new Date());
             SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyy-MM-dd");
             String fecha = formatoFecha.format(new Date());
-            String archivo = "LOGS_PROCESS" + fecha;
+            String archivo = "DOORS_PROCESS_LOG_" + fecha;
             FileWriter fw = new FileWriter(archivo, true);
             fw.write("[" + timestamp + "]: " + mensaje + "\n");
             fw.close();
