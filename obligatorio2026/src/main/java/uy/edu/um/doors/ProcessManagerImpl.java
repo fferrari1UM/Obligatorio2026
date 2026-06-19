@@ -232,10 +232,10 @@ public class ProcessManagerImpl implements ProcessManager{
     }
 
     @Override
-public void printStatus() {
+    public void printStatus() {
     System.out.println("PROCESS STATUS");
 
-    // EXECUTING
+    // Otra fase
     System.out.println("EXECUTING:");
     if (enEjecucion != null) {
         System.out.println("\tPID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
@@ -244,7 +244,7 @@ public void printStatus() {
                 + " | P=" + enEjecucion.getPrioridad());
     }
 
-    // PENDING
+    // Siguiente fase 
     System.out.println("PENDING:");
     MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
     while (!pendientes.isEmpty()) {
@@ -263,7 +263,7 @@ public void printStatus() {
         pendientes.insert(tempPendientes.get(i));
     }
 
-    // FINISHED
+    // Siguiente fase 
     System.out.println("FINISHED:");
     MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
     while (!finalizados.isEmpty()) {
@@ -281,8 +281,8 @@ public void printStatus() {
                 + " | USER:" + p.getPropietario().getAlias()
                 + " UID:" + p.getPropietario().getUid());
         finalizados.push(p);
+        }
     }
-}
 
     @Override
     public void printStatusVerbose() {
