@@ -152,7 +152,7 @@ public class ProcessManagerImpl implements ProcessManager{
                 }catch (EmptyStackException e){
                     break;
                 }
-                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre() + " | STATE " + proceso.getTipoFinalizacion() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid();
+                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre() + " | STATE: " + proceso.getTipoFinalizacion() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid();
             }
             escribirLog(submensaje);
         }
