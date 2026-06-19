@@ -415,7 +415,66 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void printStatusByProcess(int pid) {
-        System.out.println("IMPLEMENTAR");
+    // Vamos a buscar los que esten en ejecucion, voy a dejar este orden, ejecucion, pendientes y finalizados 
+    if (enEjecucion != null && enEjecucion.getPid() == pid) {
+        System.out.println("PID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
+                + " | USER:" + enEjecucion.getPropietario().getAlias()
+                + " UID:" + enEjecucion.getPropietario().getUid()
+                + " | P=" + enEjecucion.getPrioridad()
+                + " | STATE: " + enEjecucion.getEstado());
+        printEventos(enEjecucion);
+        return;
+    }
+
+    // Aca la idea es buscar los que esten pendientes 
+    MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
+    Proceso encontrado = null;
+    while (!pendientes.isEmpty()) {
+        try {
+            Proceso p = pendientes.remove();
+            if (p.getPid() == pid) encontrado = p;
+            tempPendientes.add(p);
+        } catch (EmptyHeapException e) {
+            break;
+        }
+    }
+    for (int i = 0; i < tempPendientes.size(); i++) {
+        pendientes.insert(tempPendientes.get(i));
+    }
+    if (encontrado != null) {
+        System.out.println("PID=" + encontrado.getPid() + " | " + encontrado.getNombre()
+                + " | USER:" + encontrado.getPropietario().getAlias()
+                + " UID:" + encontrado.getPropietario().getUid()
+                + " | P=" + encontrado.getPrioridad()
+                + " | STATE: " + encontrado.getEstado());
+        printEventos(encontrado);
+        return;
+    }
+
+    // Busca los proceso en los que hayan finalizado 
+    MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
+    while (!finalizados.isEmpty()) {
+        try {
+            Proceso p = finalizados.pop();
+            tempFinalizados.add(p);
+        } catch (EmptyStackException e) {
+            break;
+        }
+    }
+    for (int i = 0; i < tempFinalizados.size(); i++) {
+        Proceso p = tempFinalizados.get(i);
+        if (p.getPid() == pid) encontrado = p;
+        finalizados.push(p);
+    }
+    if (encontrado != null) {
+        System.out.println("PID=" + encontrado.getPid() + " | " + encontrado.getNombre()
+                + " | USER:" + encontrado.getPropietario().getAlias()
+                + " UID:" + encontrado.getPropietario().getUid()
+                + " | STATE: " + encontrado.getTipoFinalizacion());
+        printEventos(encontrado);
+    } else {
+        System.out.println("No se encontro proceso con PID: " + pid);
+        }
     }
 
     public void escribirLog(String mensaje){
