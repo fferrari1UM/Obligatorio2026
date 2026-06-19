@@ -164,7 +164,29 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void finishProcessError() {
-        System.out.println("IMPLEMENTAR");
+        if (enEjecucion == null){
+            System.out.println("No se encuentra ningun proceso en ejecucion");
+            return;
+        }
+        enEjecucion.setEstado("FINISHED");
+        enEjecucion.setTipoFinalizacion("ERROR");
+        if (finalizados.size() == MAX_FINALIZADOS){
+            String submensaje = "Finished process stack overflow";
+            while (!finalizados.isEmpty()){
+                Proceso proceso = null;
+                try {
+                    proceso = finalizados.pop();
+                }catch (EmptyStackException e){
+                    break;
+                }
+                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre() + " | STATE: " + proceso.getTipoFinalizacion() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid();
+            }
+            escribirLog(submensaje);
+        }
+        finalizados.push(enEjecucion);
+        String mensaje = "ENDING PROCESS: PID=" + enEjecucion.getPid() + " | STATE: ERROR";
+        escribirLog(mensaje);
+        enEjecucion = null;
     }
 
     @Override
