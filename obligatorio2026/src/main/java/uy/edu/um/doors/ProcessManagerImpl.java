@@ -286,7 +286,72 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void printStatusVerbose() {
-        System.out.println("IMPLEMENTAR");
+
+
+        System.out.println("PROCESS STATUS VERBOSE");
+
+        System.out.println("EXECUTING:");
+        if (enEjecucion != null) {
+            System.out.println("\tPID=" + enEjecucion.getPid() + " | " + enEjecucion.getNombre()
+                    + " | USER:" + enEjecucion.getPropietario().getAlias()
+                    + " UID:" + enEjecucion.getPropietario().getUid()
+                    + " | P=" + enEjecucion.getPrioridad());
+            printEventos(enEjecucion);
+        }
+
+        System.out.println("PENDING:");
+        MyLinkedListImpl<Proceso> tempPendientes = new MyLinkedListImpl<>();
+        while (!pendientes.isEmpty()) {
+            try {
+                Proceso p = pendientes.remove();
+                System.out.println("\tPID=" + p.getPid() + " | " + p.getNombre()
+                        + " | USER:" + p.getPropietario().getAlias()
+                        + " UID:" + p.getPropietario().getUid()
+                        + " | P=" + p.getPrioridad());
+                printEventos(p);
+                tempPendientes.add(p);
+            } catch (EmptyHeapException e) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < tempPendientes.size(); i++) {
+            pendientes.insert(tempPendientes.get(i));
+        }
+
+        System.out.println("FINISHED:");
+        MyLinkedListImpl<Proceso> tempFinalizados = new MyLinkedListImpl<>();
+        while (!finalizados.isEmpty()) {
+            try {
+                Proceso p = finalizados.pop();
+                tempFinalizados.add(p);
+            } catch (EmptyStackException e) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < tempFinalizados.size(); i++) {
+            Proceso p = tempFinalizados.get(i);
+            System.out.println("\tPID=" + p.getPid() + " " + p.getNombre()
+                    + " | STATE: " + p.getTipoFinalizacion()
+                    + " | USER:" + p.getPropietario().getAlias()
+                    + " UID:" + p.getPropietario().getUid());
+            printEventos(p);
+            finalizados.push(p);
+        }
+    }
+
+    private void printEventos(Proceso p) {
+        for (int i = 0; i < p.getEventos().size(); i++) {
+            Evento e = p.getEventos().get(i);
+            String instrucciones = "";
+            for (int j = 0; j < e.getInstructions().size(); j++) {
+                instrucciones += e.getInstructions().get(j);
+                if (j < e.getInstructions().size() - 1) instrucciones += ", ";
+            }
+            System.out.println("\t\tEVENT: " + e.getType() + " | Instructions [" + instrucciones + "]");
+        }
+
     }
 
     @Override
