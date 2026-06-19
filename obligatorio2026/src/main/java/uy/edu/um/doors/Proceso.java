@@ -9,6 +9,7 @@ public class Proceso implements Comparable<Proceso> {
     private int prioridad;
     private String estado;
     private MyLinkedListImpl<Evento> eventos;
+    private String tipoFinalizacion;
 
     public Proceso(int pid, String nombre, Usuario propietario){
         this.pid = pid;
@@ -17,6 +18,7 @@ public class Proceso implements Comparable<Proceso> {
         this.prioridad = 0;
         this.estado = "NEW";
         this.eventos = new MyLinkedListImpl<>();
+        this.tipoFinalizacion = null;
     }
 
     public int getPid() {
@@ -49,6 +51,14 @@ public class Proceso implements Comparable<Proceso> {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getTipoFinalizacion() {
+        return tipoFinalizacion;
+    }
+
+    public void setTipoFinalizacion(String tipoFinalizacion) {
+        this.tipoFinalizacion = tipoFinalizacion;
     }
 
     @Override

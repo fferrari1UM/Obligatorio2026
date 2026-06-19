@@ -6,6 +6,7 @@ import uy.edu.um.tad.heap.EmptyHeapException;
 import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.queue.EmptyQueueException;
 import uy.edu.um.tad.queue.MyQueueImpl;
+import uy.edu.um.tad.stack.EmptyStackException;
 import uy.edu.um.tad.stack.MyStackImpl;
 
 import java.io.File;
@@ -23,6 +24,7 @@ public class ProcessManagerImpl implements ProcessManager{
     private MyHeapImpl<Proceso> pendientes = new MyHeapImpl<>();
     private MyStackImpl<Proceso> finalizados = new MyStackImpl<>();
     private Proceso enEjecucion = null;
+    private int MAX_FINALIZADOS = 10;
 
     @Override
     public void loadProcessAndUserData(String processCsvPath, String usersCsvPath){
@@ -135,7 +137,29 @@ public class ProcessManagerImpl implements ProcessManager{
 
     @Override
     public void finishProcessOk() {
-        System.out.println("IMPLEMENTAR");
+        if (enEjecucion == null){
+            System.out.println("No se encuentra ningun proceso en ejecucion");
+            return;
+        }
+        enEjecucion.setEstado("FINISHED");
+        enEjecucion.setTipoFinalizacion("OK");
+        if (finalizados.size() == MAX_FINALIZADOS){
+            String submensaje = "Finished process stack overflow";
+            while (!finalizados.isEmpty()){
+                Proceso proceso = null;
+                try {
+                    proceso = finalizados.pop();
+                }catch (EmptyStackException e){
+                    break;
+                }
+                submensaje += "\nPID=" + proceso.getPid() + " " + proceso.getNombre() + " | STATE " + proceso.getTipoFinalizacion() + " | USER:" + proceso.getPropietario().getAlias() + " UID:" + proceso.getPropietario().getUid();
+            }
+            escribirLog(submensaje);
+        }
+        finalizados.push(enEjecucion);
+        String mensaje = "ENDING PROCESS: PID=" + enEjecucion.getPid() + " | STATE: OK";
+        escribirLog(mensaje);
+        enEjecucion = null;
     }
 
     @Override
